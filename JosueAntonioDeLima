@@ -1,0 +1,106 @@
+package br.com.drone.dronetest;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class Drone {
+	public String changePosition(String str) {
+
+		// TODO: Implements your code
+		StringBuilder stringOk = new StringBuilder("S");
+		int carIni = 0;
+		String strAnterior = " ";
+		Map<String, Integer> eixos = new HashMap<String, Integer>();
+
+		/**
+		 * Verifica se o valor da String é corresponde ao solicitado
+		 */
+
+		for (int i = 0; i < str.length(); i++) {
+			carIni++;
+			if (!str.substring(i, carIni).equals("N") && !str.substring(i, carIni).equals("S")
+					&& !str.substring(i, carIni).equals("L") && !str.substring(i, carIni).equals("O")
+					&& !str.substring(i, carIni).equals("X")) {
+				stringOk = new StringBuilder("N");
+			}
+		}
+
+		if (stringOk.toString().equals("S")) {
+			carIni = 0;
+			for (int i = 0; i < str.length(); i++) {
+				carIni++;
+				/**
+				 * Verifica a String anterior (para cancelar se for igual a N);
+				 */
+				strAnterior = (str.substring(i, carIni).equals("N") ? str.substring(i, carIni) : " ");
+
+				/**
+				 * Verifica a quandidade acumulada dos eixos
+				 */
+
+				if (!str.substring(i, carIni).equals("X")) {
+					int qtdeEixo = (eixos.get(str.substring(i, carIni)) != null ? eixos.get(str.substring(i, carIni))
+							: 0);
+					eixos.put(str.substring(i, carIni), ++qtdeEixo);
+				} else {
+					if (!strAnterior.equals(" ")) {
+						/**
+						 * Subtrai a quantidade acumulada do eixo anterior
+						 * (quando o atual igual a N)
+						 */
+						int qtdeEixo = (eixos.get(str.substring(i, carIni)) != null
+								? eixos.get(str.substring(i, carIni)) : 0);
+						eixos.put(str.substring(i, carIni), --qtdeEixo);
+					}
+				}
+
+			}
+
+		}
+
+		Set<String> chaves = eixos.keySet();
+		int qtdeEixoL = 0;
+		int qtdeEixoO = 0;
+		int qtdeEixoN = 0;
+		int qtdeEixoS = 0;
+		for (String chave : chaves) {
+			if (chave.equals("L"))
+				qtdeEixoL = eixos.get(chave);
+
+			if (chave.equals("O"))
+				qtdeEixoO = eixos.get(chave);
+
+			if (chave.equals("N"))
+				qtdeEixoN = eixos.get(chave);
+
+			if (chave.equals("S"))
+				qtdeEixoS = eixos.get(chave);
+		}
+
+		StringBuilder retorno = new StringBuilder();
+
+		if (qtdeEixoL > 0)
+			retorno.append("(" + qtdeEixoL + ", ");
+
+		if (qtdeEixoO > 0) {
+			if (qtdeEixoL > 0)
+				retorno.append(qtdeEixoO + ")");
+			else
+				retorno.append("(" + qtdeEixoO + ", ");
+		}
+
+		if (qtdeEixoN > 0) {
+			if (qtdeEixoL > 0 || qtdeEixoO > 0)
+				retorno.append(qtdeEixoN + ")");
+			else
+				retorno.append("(" + qtdeEixoN + ", ");
+		}
+
+		if (qtdeEixoS > 0)
+			retorno.append(qtdeEixoS + ")");
+
+		return retorno.toString();
+
+	}
+}
